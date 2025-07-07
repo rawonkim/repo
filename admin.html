@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .dark-mode-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <button class="btn btn-secondary btn-sm dark-mode-toggle" id="darkModeBtn">🌙 다크모드</button>
+
+  <div class="container mt-3">
+    <h3 class="mt-5 mb-3">신규 등록 상품</h3>
+    <form class="row row-cols-lg-auto g-3 align-items-center">
+      <div class="col-12">
+        <select class="form-select" id="categoryFilter">
+          <option value="all" selected>전체 보기</option>
+          <option value="상의">상의</option>
+          <option value="하의">하의</option>
+          <option value="신발">신발</option>
+          <option value="패션잡화">패션잡화</option>
+        </select>
+      </div>
+
+      <div class="col-6">
+        <input type="text" class="form-control" id="keywordInput" placeholder="제품명 또는 브랜드명을 입력해주세요" />
+      </div>
+
+      <div class="col-auto">
+        <select class="form-select" id="genderFilter">
+          <option value="all" selected>전체 성별</option>
+          <option value="남성">남성</option>
+          <option value="여성">여성</option>
+        </select>
+      </div>
+
+      <div class="col-auto">
+        <button type="button" class="btn btn-primary" id="filterBtn">조회</button>
+      </div>
+
+      <div class="col-auto">
+        <a href="join.html" class="btn btn-success" id="showSignupBtn">회원 가입</a>
+      </div>
+    </form>
+
+    <div class="mt-4">
+      <div class="text-end text-muted" id="timeDisplay"></div>
+      <table class="table table-sm mt-2">
+        <thead>
+          <tr>
+            <th>카테고리</th>
+            <th>브랜드</th>
+            <th>상품명</th>
+            <th>가격</th>
+          </tr>
+        </thead>
+        <tbody id="product_data_Table"></tbody>
+      </table>
+
+      <nav>
+        <ul class="pagination justify-content-center" id="pagination"></ul>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    const product_data = [
+      { category: "상의", brand: "Supreme", product: "슈프림 박스로고 후드티", price: "390,000", gender: "남성" },
+      { category: "하의", brand: "DIESEL", product: "디젤 트랙 팬츠", price: "188,000", gender: "남성" },
+      { category: "신발", brand: "Nike", product: "에어포스 1", price: "137,000", gender: "여성" },
+      { category: "패션잡화", brand: "Music&Goods", product: "빵빵이 키링", price: "29,000", gender: "여성" },
+      { category: "상의", brand: "ADER", product: "아더에러 맨투맨", price: "210,000", gender: "남성" },
+      { category: "신발", brand: "Adidas", product: "슈퍼스타 화이트", price: "119,000", gender: "여성" }
+    ];
+
+    let currentPage = 1;
+    const itemsPerPage = 3;
+    let filteredData = [...product_data];
+
+    const product_data_Table = document.getElementById("product_data_Table");
+    const pagination = document.getElementById("pagination");
+
+    function renderTable(data) {
+      product_data_Table.innerHTML = "";
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const pageItems = data.slice(startIndex, endIndex);
+
+      pageItems.forEach(item => {
+        const row = product_data_Table.insertRow();
+        row.insertCell(0).innerText = item.category;
+        row.insertCell(1).innerText = item.brand;
+        row.insertCell(2).innerText = item.product;
+        row.insertCell(3).innerText = item.price;
+      });
+    }
+
+    function renderPagination(dataLength) {
+      pagination.innerHTML = "";
+      const pageCount = Math.ceil(dataLength / itemsPerPage);
+
+      for (let i = 1; i <= pageCount; i++) {
+        const li = document.createElement("li");
+        li.className = "page-item" + (i === currentPage ? " active" : "");
+        const a = document.createElement("a");
+        a.className = "page-link";
+        a.href = "#";
+        a.textContent = i;
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          currentPage = i;
+          renderTable(filteredData);
+          renderPagination(filteredData.length);
+        });
+        li.appendChild(a);
+        pagination.appendChild(li);
+      }
+    }
+
+    function applyFilters() {
+      const selectedCategory = document.getElementById("categoryFilter").value;
+      const keyword = document.getElementById("keywordInput").value.toLowerCase().trim();
+      const selectedGender = document.getElementById("genderFilter").value;
+
+      filteredData = product_data.filter(item => {
+        const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+        const matchesKeyword = !keyword || item.product.toLowerCase().includes(keyword) || item.brand.toLowerCase().includes(keyword);
+        const matchesGender = selectedGender === "all" || item.gender === selectedGender;
+        return matchesCategory && matchesKeyword && matchesGender;
+      });
+
+      currentPage = 1;
+      renderTable(filteredData);
+      renderPagination(filteredData.length);
+    }
+
+    document.getElementById("filterBtn").addEventListener("click", applyFilters);
+
+    function updateTime() {
+      const now = new Date();
+      document.getElementById("timeDisplay").textContent = now.toLocaleString();
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    const darkModeBtn = document.getElementById("darkModeBtn");
+    darkModeBtn.addEventListener("click", () => {
+      const html = document.documentElement;
+      const current = html.getAttribute("data-bs-theme");
+      html.setAttribute("data-bs-theme", current === "light" ? "dark" : "light");
+      darkModeBtn.textContent = current === "light" ? "☀️ 라이트모드" : "🌙 다크모드";
+    });
+
+    // 최초 초기 렌더링
+    renderTable(filteredData);
+    renderPagination(filteredData.length);
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
