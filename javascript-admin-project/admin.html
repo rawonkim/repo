@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <button class="btn btn-secondary btn-sm dark-mode-toggle" id="darkModeBtn">🌙 다크모드</button>
+
+  <div class="container mt-3">
+    <h3 class="mt-5 mb-3">신규 등록 상품</h3>
+    <form class="row row-cols-lg-auto g-3 align-items-center" onsubmit="return false;">
+      <div class="col-12">
+        <select class="form-select" id="categoryFilter">
+          <option value="all" selected>전체 보기</option>
+          <option value="상의">상의</option>
+          <option value="하의">하의</option>
+          <option value="신발">신발</option>
+          <option value="패션잡화">패션잡화</option>
+        </select>
+      </div>
+      <div class="col-6">
+        <input
+          type="text"
+          class="form-control"
+          id="keywordInput"
+          placeholder="제품명 또는 브랜드명을 입력해주세요"
+          autocomplete="off"
+        />
+      </div>
+      <div class="col-auto">
+        <select class="form-select" id="genderFilter">
+          <option value="all" selected>전체 성별</option>
+          <option value="남성">남성</option>
+          <option value="여성">여성</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <button type="button" class="btn btn-primary" id="filterBtn">조회</button>
+      </div>
+      <div class="col-auto">
+        <a href="signup.html" class="btn btn-success" id="showSignupBtn">회원 가입</a>
+      </div>
+    </form>
+
+    <div class="mt-4">
+      <div class="text-end text-muted" id="timeDisplay"></div>
+      <table class="table table-sm mt-2">
+        <thead>
+          <tr>
+            <th>카테고리</th>
+            <th>브랜드</th>
+            <th>상품명</th>
+            <th>가격</th>
+          </tr>
+        </thead>
+        <tbody id="product_data_Table"></tbody>
+      </table>
+
+      <nav>
+        <ul class="pagination justify-content-center" id="pagination"></ul>
+      </nav>
+    </div>
+  </div>
+
+  <script src="function.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
